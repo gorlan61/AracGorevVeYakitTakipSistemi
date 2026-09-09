@@ -118,23 +118,9 @@ Sürücü (1) ───< Görev >─── (1) Araç
 
 Uygulama başlangıcında örnek veri tohumlama işlemi çalışır. Tarayıcıda terminalde belirtilen HTTPS adresini açın.
 
-## Proje Ekran Görüntüleri
-
-Ekran görüntülerini `docs/screenshots/` klasörüne ekleyip aşağıdaki bağlantıları güncelleyebilirsiniz.
-
-| Gösterge Paneli | Görev Yönetimi |
-| --- | --- |
-| ![Gösterge paneli ekran görüntüsü](docs/screenshots/dashboard.png) | ![Görev yönetimi ekran görüntüsü](docs/screenshots/gorevler.png) |
-
-| Yakıt Kayıtları | Raporlama |
-| --- | --- |
-| ![Yakıt kayıtları ekran görüntüsü](docs/screenshots/yakit.png) | ![Raporlama ekran görüntüsü](docs/screenshots/raporlar.png) |
-
-> Not: Görsel dosyaları henüz depoya eklenmemiştir; yukarıdaki alanlar gelecekteki ekran görüntüleri için yer tutucudur.
-
 ## İletişim ve Katkıda Bulunanlar
 
-- **Geliştiren:** Stajyer geliştirici (ad-soyad bilgisi paylaşılmadığı için genel ifade kullanılmıştır)
+- **Geliştiren:** Tolga Gürsoy
 - **Kurum:** Trabzon Büyükşehir Belediyesi Bilgi İşlem Dairesi Başkanlığı, Yazılım Şube Müdürlüğü
 
 Projenin geliştirilme sürecine sağladıkları kurum içi destek ve rehberlik için Trabzon Büyükşehir Belediyesi Yazılım Şube Müdürlüğüne teşekkür edilir.
