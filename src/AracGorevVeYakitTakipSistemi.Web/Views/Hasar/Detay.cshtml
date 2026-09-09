@@ -1,0 +1,95 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.HasarDto
+@using AracGorevVeYakitTakipSistemi.Domain.Enums
+@{
+    ViewData["Title"] = "Hasar Detayı";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">Hasar Kaydı Detayı #@Model.HasarId</h1>
+</div>
+
+@if (TempData["Basari"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@TempData["Basari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-shield-exclamation me-1"></i>Hasar Bilgileri</h5>
+                @{
+                    var (badge, metin) = Model.OnarimDurumu.ToString() switch
+                    {
+                        "Beklemede" => ("badge bg-warning text-dark", "Beklemede"),
+                        "Onarimda" => ("badge bg-info text-dark", "Onarımda"),
+                        _ => ("badge bg-success", "Tamamlandı")
+                    };
+                }
+                <span class="@badge fs-6">@metin</span>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0 fs-6">
+                    <dt class="col-sm-4 text-muted">Araç Plaka</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.AracPlaka</dd>
+
+                    <dt class="col-sm-4 text-muted">Hasar Tarihi</dt>
+                    <dd class="col-sm-8">@Model.Tarih.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-sm-4 text-muted">Tahmini Maliyet</dt>
+                    <dd class="col-sm-8 text-danger fw-bold">@Model.TahminiMaliyet.ToString("N2") ₺</dd>
+
+                    <dt class="col-sm-4 text-muted">Açıklama</dt>
+                    <dd class="col-sm-8">@Model.Aciklama</dd>
+
+                    @if (!string.IsNullOrEmpty(Model.FotografYolu))
+                    {
+                        <dt class="col-sm-4 text-muted">Hasar Fotoğrafı</dt>
+                        <dd class="col-sm-8">
+                            <img src="@Model.FotografYolu" class="img-fluid rounded border shadow-sm" style="max-height: 300px;" alt="Hasar Fotoğrafı" />
+                        </dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Duzenle" asp-route-id="@Model.HasarId" class="btn btn-primary">
+                <i class="bi bi-pencil me-1"></i>Düzenle
+            </a>
+            <a asp-action="Sil" asp-route-id="@Model.HasarId" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>Sil
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Onarım Durumu Güncelle</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="DurumGuncelle" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.HasarId" />
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Onarım Durumu</label>
+                        <select name="durum" class="form-select" asp-items="@Html.GetEnumSelectList<OnarimDurumu>()" asp-for="OnarimDurumu">
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-check2-circle me-1"></i>Durumu Güncelle
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

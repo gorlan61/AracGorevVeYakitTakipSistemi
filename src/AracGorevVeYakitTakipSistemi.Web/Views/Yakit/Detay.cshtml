@@ -1,0 +1,78 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.YakitKaydiDto
+@{
+    ViewData["Title"] = "Yakıt Kaydı Detayı";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">Yakıt Kaydı Detayı</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-info-circle text-primary me-2"></i>Kayıt Bilgileri</h5>
+                <span class="badge bg-light text-dark border">ID: @Model.YakitId</span>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Araç Plaka</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.AracPlaka</dd>
+
+                    <dt class="col-sm-4 text-muted">Tarih</dt>
+                    <dd class="col-sm-8">@Model.Tarih.ToString("dd MMMM yyyy, dddd")</dd>
+
+                    <dt class="col-sm-4 text-muted">Fiş / Fatura No</dt>
+                    <dd class="col-sm-8">
+                        @if (!string.IsNullOrEmpty(Model.FisNo))
+                        {
+                            <span class="font-monospace">@Model.FisNo</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Belirtilmemiş</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-cash-coin text-success me-2"></i>Tüketim ve Maliyet</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Kilometre</dt>
+                    <dd class="col-sm-8">@Model.Km.ToString("N0") km</dd>
+
+                    <dt class="col-sm-4 text-muted">Alınan Miktar</dt>
+                    <dd class="col-sm-8">@Model.Litre.ToString("N2") Litre</dd>
+
+                    <dt class="col-sm-4 text-muted">Toplam Tutar</dt>
+                    <dd class="col-sm-8 text-success fw-bold">@Model.ToplamTutar.ToString("N2") ₺</dd>
+
+                    <dt class="col-sm-4 text-muted">Birim Fiyat</dt>
+                    <dd class="col-sm-8 text-secondary">
+                        @Model.BirimFiyat.ToString("N2") ₺ / Litre
+                        <small class="d-block text-muted mt-1">(Otomatik hesaplanmıştır)</small>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <a asp-action="Duzenle" asp-route-id="@Model.YakitId" class="btn btn-primary">
+        <i class="bi bi-pencil me-1"></i> Düzenle
+    </a>
+    <a asp-action="Sil" asp-route-id="@Model.YakitId" class="btn btn-outline-danger btn-sil-onayla" data-isim="@Model.AracPlaka – @Model.Tarih.ToString("dd.MM.yyyy") yakıt kaydı">
+        <i class="bi bi-trash me-1"></i> Sil
+    </a>
+</div>

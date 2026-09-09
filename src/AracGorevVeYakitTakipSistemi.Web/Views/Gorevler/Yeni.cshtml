@@ -1,0 +1,72 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.GorevDto
+@{
+    ViewData["Title"] = "Yeni Görev Oluştur";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">Yeni Görev Oluştur</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Yeni" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="AracId" class="form-label fw-semibold">Araç <span class="text-danger">*</span></label>
+                            <select asp-for="AracId" class="form-select" asp-items="ViewBag.AracListesi">
+                                <option value="">-- Araç Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="AracId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="SurucuId" class="form-label fw-semibold">Sürücü <span class="text-danger">*</span></label>
+                            <select asp-for="SurucuId" class="form-select" asp-items="ViewBag.SurucuListesi">
+                                <option value="">-- Sürücü Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="SurucuId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="GorevTarihi" class="form-label fw-semibold">Görev Tarihi <span class="text-danger">*</span></label>
+                            <input asp-for="GorevTarihi" class="form-control" type="date" />
+                            <span asp-validation-for="GorevTarihi" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="GidilecekYer" class="form-label fw-semibold">Gidilecek Yer <span class="text-danger">*</span></label>
+                            <input asp-for="GidilecekYer" class="form-control" placeholder="Örn: Ankara Bölge Müdürlüğü" />
+                            <span asp-validation-for="GidilecekYer" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="GorevAmaci" class="form-label fw-semibold">Görev Amacı <span class="text-danger">*</span></label>
+                            <textarea asp-for="GorevAmaci" class="form-control" rows="3" placeholder="Görev açıklamasını ve amacını yazın..."></textarea>
+                            <span asp-validation-for="GorevAmaci" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy me-1"></i>Görev Oluştur
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

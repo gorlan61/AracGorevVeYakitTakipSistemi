@@ -1,0 +1,103 @@
+@model IReadOnlyList<AracGorevVeYakitTakipSistemi.Application.DTOs.HasarDto>
+@{
+    ViewData["Title"] = "Hasar Yönetimi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-shield-exclamation me-2"></i>Hasar Kayıtları</h1>
+    <a asp-action="Yeni" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Yeni Hasar Kaydı Ekle
+    </a>
+</div>
+
+@if (TempData["Basari"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@TempData["Basari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>@TempData["Hata"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-shield-check fs-1 d-block mb-2"></i>
+                <p>Henüz hasar kaydı bulunmuyor. <a asp-action="Yeni">İlk kaydı ekleyin.</a></p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 datatable-auto">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fotoğraf</th>
+                            <th>Tarih</th>
+                            <th>Araç</th>
+                            <th>Açıklama</th>
+                            <th>Tahmini Maliyet</th>
+                            <th>Onarım Durumu</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in Model)
+                        {
+                            <tr>
+                                <td style="width: 80px;">
+                                    @if (!string.IsNullOrEmpty(h.FotografYolu))
+                                    {
+                                        <img src="@h.FotografYolu" class="img-thumbnail rounded" style="max-height: 50px; object-fit: cover;" alt="Hasar Fotoğrafı" />
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted border">Fotoğraf Yok</span>
+                                    }
+                                </td>
+                                <td>@h.Tarih.ToString("dd.MM.yyyy")</td>
+                                <td><strong>@h.AracPlaka</strong></td>
+                                <td>@h.Aciklama</td>
+                                <td class="fw-bold">@h.TahminiMaliyet.ToString("N2") ₺</td>
+                                <td>
+                                    @{
+                                        var (badge, metin) = h.OnarimDurumu.ToString() switch
+                                        {
+                                            "Beklemede" => ("badge bg-warning text-dark", "Beklemede"),
+                                            "Onarimda" => ("badge bg-info text-dark", "Onarımda"),
+                                            _ => ("badge bg-success", "Tamamlandı")
+                                        };
+                                    }
+                                    <span class="@badge">@metin</span>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Detay" asp-route-id="@h.HasarId"
+                                       class="btn btn-sm btn-outline-secondary me-1" title="Detay">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Duzenle" asp-route-id="@h.HasarId"
+                                       class="btn btn-sm btn-outline-primary me-1" title="Düzenle">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Sil" asp-route-id="@h.HasarId"
+                                       class="btn btn-sm btn-outline-danger btn-sil-onayla" title="Sil"
+                                       data-isim="@h.AracPlaka – @h.Tarih.ToString("dd.MM.yyyy") hasar kaydı">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

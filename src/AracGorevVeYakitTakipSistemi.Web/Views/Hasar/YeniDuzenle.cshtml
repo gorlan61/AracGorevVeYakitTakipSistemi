@@ -1,0 +1,93 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.HasarDto
+@using AracGorevVeYakitTakipSistemi.Domain.Enums
+@{
+    bool yeniKayit = Model.HasarId == 0;
+    ViewData["Title"] = yeniKayit ? "Yeni Hasar Kaydı" : "Hasar Kaydı Düzenle";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="@(yeniKayit ? "Yeni" : "Duzenle")" asp-route-id="@Model.HasarId" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="HasarId" />
+                    <input type="hidden" asp-for="FotografYolu" />
+
+                    <div asp-validation-summary="All" class="alert alert-danger @(ViewData.ModelState.IsValid ? "d-none" : "")" role="alert"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="AracId" class="form-label fw-semibold">Araç <span class="text-danger">*</span></label>
+                            <select asp-for="AracId" class="form-select" asp-items="ViewBag.AracListesi">
+                                <option value="">-- Araç Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="AracId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Tarih" class="form-label fw-semibold">Hasar Tarihi <span class="text-danger">*</span></label>
+                            <input asp-for="Tarih" class="form-control" type="date" />
+                            <span asp-validation-for="Tarih" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="TahminiMaliyet" class="form-label fw-semibold">Tahmini Maliyet (TL) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="TahminiMaliyet" class="form-control" type="text" inputmode="decimal" />
+                                <span class="input-group-text">₺</span>
+                            </div>
+                            <span asp-validation-for="TahminiMaliyet" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="OnarimDurumu" class="form-label fw-semibold">Onarım Durumu <span class="text-danger">*</span></label>
+                            <select asp-for="OnarimDurumu" class="form-select" asp-items="@Html.GetEnumSelectList<OnarimDurumu>()">
+                            </select>
+                            <span asp-validation-for="OnarimDurumu" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Aciklama" class="form-label fw-semibold">Hasar Açıklaması <span class="text-danger">*</span></label>
+                            <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Hasarın oluş biçimini ve detaylarını yazın..."></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Hasar Fotoğrafı Yükle</label>
+                            <input type="file" name="fotograf" class="form-control" accept="image/*" />
+                            <div class="form-text">Desteklenen formatlar: JPG, PNG, WEBP.</div>
+
+                            @if (!string.IsNullOrEmpty(Model.FotografYolu))
+                            {
+                                <div class="mt-2">
+                                    <span class="text-muted me-2 small">Mevcut Fotoğraf:</span>
+                                    <img src="@Model.FotografYolu" class="img-thumbnail" style="max-height: 100px;" alt="Mevcut Fotoğraf" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy me-1"></i>@(yeniKayit ? "Kaydet" : "Güncelle")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

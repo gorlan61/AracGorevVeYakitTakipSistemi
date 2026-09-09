@@ -1,0 +1,87 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.YakitKaydiDto
+@{
+    bool yeniKayit = Model.YakitId == 0;
+    ViewData["Title"] = yeniKayit ? "Yeni Yakıt Kaydı" : "Yakıt Kaydı Düzenle";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="@(yeniKayit ? "Yeni" : "Duzenle")" asp-route-id="@Model.YakitId" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="YakitId" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="AracId" class="form-label fw-semibold">Araç <span class="text-danger">*</span></label>
+                            <select asp-for="AracId" class="form-select" asp-items="ViewBag.AracListesi">
+                                <option value="">-- Araç Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="AracId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Tarih" class="form-label fw-semibold">Tarih <span class="text-danger">*</span></label>
+                            <input asp-for="Tarih" class="form-control" type="date" />
+                            <span asp-validation-for="Tarih" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="FisNo" class="form-label fw-semibold">Fiş / Fatura No <span class="text-danger">*</span></label>
+                            <input asp-for="FisNo" class="form-control" placeholder="Örn: FIS-2026-001" />
+                            <span asp-validation-for="FisNo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Km" class="form-label fw-semibold">Araç Kilometresi <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Km" class="form-control" type="number" min="0" />
+                                <span class="input-group-text">km</span>
+                            </div>
+                            <span asp-validation-for="Km" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Litre" class="form-label fw-semibold">Yakıt Miktarı (Litre) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Litre" class="form-control" type="text" inputmode="decimal" />
+                                <span class="input-group-text">L</span>
+                            </div>
+                            <span asp-validation-for="Litre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ToplamTutar" class="form-label fw-semibold">Toplam Tutar (TL) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="ToplamTutar" class="form-control" type="text" inputmode="decimal" />
+                                <span class="input-group-text">₺</span>
+                            </div>
+                            <span asp-validation-for="ToplamTutar" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy me-1"></i>@(yeniKayit ? "Kaydet" : "Güncelle")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

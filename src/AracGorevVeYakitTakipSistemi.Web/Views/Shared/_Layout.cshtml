@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Araç Görev ve Yakıt Takip Sistemi</title>
+    <script>
+        // Temaı ilk boyamadan ÖNCE uygula (FOUC'u ve ikon senkron sorununu önler).
+        (function () {
+            try {
+                var stored = localStorage.getItem('site-theme');
+                var theme = (stored === 'dark' || stored === 'light')
+                    ? stored
+                    : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            } catch (e) {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AracGorevVeYakitTakipSistemi.Web.styles.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-modern mb-3">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand navbar-brand-modern" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-truck-front-fill"></i>
+                    <span>Araç Takip Sistemi</span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Menüyü Aç/Kapat">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 ms-lg-3 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-grid-1x2-fill"></i> Ana Sayfa
+                            </a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Araclar" asp-action="Index">
+                                    <i class="bi bi-truck"></i> Araçlar
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Suruculer" asp-action="Index">
+                                    <i class="bi bi-person-badge"></i> Sürücüler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Gorevler" asp-action="Index">
+                                    <i class="bi bi-clipboard2-check"></i> Görevler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Yakit" asp-action="Index">
+                                    <i class="bi bi-fuel-pump"></i> Yakıt
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Bakim" asp-action="Index">
+                                    <i class="bi bi-tools"></i> Bakım
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Hasar" asp-action="Index">
+                                    <i class="bi bi-shield-exclamation"></i> Hasar
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-modern" asp-controller="Raporlar" asp-action="Index">
+                                    <i class="bi bi-bar-chart-line-fill"></i> Raporlar
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle dark/light">
+                            <i id="theme-icon" class="bi bi-moon-fill"></i>
+                        </button>
+                    </div>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid px-lg-4 flex-grow-1">
+        <main role="main" class="pb-4">
+            @if (TempData["Basari"] != null)
+            {
+                <span id="tempdata-basari" class="d-none">@TempData["Basari"]</span>
+            }
+            @if (TempData["Hata"] != null)
+            {
+                <span id="tempdata-hata" class="d-none">@TempData["Hata"]</span>
+            }
+            @if (TempData["Uyari"] != null)
+            {
+                <span id="tempdata-uyari" class="d-none">@TempData["Uyari"]</span>
+            }
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer py-3 mt-auto">
+        <div class="container-fluid px-lg-4 text-muted small">
+            &copy; @DateTime.Now.Year Araç Görev ve Yakıt Takip Sistemi
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

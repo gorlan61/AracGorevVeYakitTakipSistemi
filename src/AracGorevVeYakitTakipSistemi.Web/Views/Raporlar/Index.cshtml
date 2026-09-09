@@ -1,0 +1,343 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.RaporDataDto
+@{
+    ViewData["Title"] = "Maliyet ve Performans Raporları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h4 mb-1">Maliyet ve Performans Raporları</h1>
+        <p class="text-muted small mb-0">Filo harcamaları, araç kullanım sıklığı, yakıt tüketim analizi ve yaklaşan bakımlar.</p>
+    </div>
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm d-print-none">
+        <i class="bi bi-printer me-1"></i> Yazdır / PDF İndir
+    </button>
+</div>
+
+<!-- 1. Özet Harcama Kartları -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Filo Toplam Maliyeti</div>
+                <div class="metric-value">@Model.FiloToplamMaliyet.ToString("N2") ₺</div>
+            </div>
+            <span class="metric-icon icon-primary"><i class="bi bi-cash-stack"></i></span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Yakıt Harcaması</div>
+                <div class="metric-value">@Model.FiloToplamYakitMaliyeti.ToString("N2") ₺</div>
+            </div>
+            <span class="metric-icon icon-success"><i class="bi bi-fuel-pump"></i></span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Bakım Harcaması</div>
+                <div class="metric-value">@Model.FiloToplamBakimMaliyeti.ToString("N2") ₺</div>
+            </div>
+            <span class="metric-icon icon-warning"><i class="bi bi-tools"></i></span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Hasar Harcaması</div>
+                <div class="metric-value">@Model.FiloToplamHasarMaliyeti.ToString("N2") ₺</div>
+            </div>
+            <span class="metric-icon icon-danger"><i class="bi bi-shield-exclamation"></i></span>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Grafikler -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0">Aylık Yakıt Tüketimi (Tutar ve Litre)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="yakitGrafik" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0">Maliyet Dağılımı</h6>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="maliyetPastaGrafik" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Kullanım ve Maliyet Özetleri (Top 5) -->
+<div class="row g-4 mb-4">
+    <!-- En Çok Kullanılan Araçlar -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0">En Çok Kullanılan Araçlar (Top 5)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Plaka</th>
+                                <th>Marka / Model</th>
+                                <th class="text-center">Görev Sayısı</th>
+                                <th class="text-end">Kat Edilen Km</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.EnCokKullanilanAraclar.Any())
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">Veri bulunamadı.</td></tr>
+                            }
+                            else
+                            {
+                                foreach (var a in Model.EnCokKullanilanAraclar)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-light text-dark border font-monospace">@a.Plaka</span></td>
+                                        <td class="fw-medium">@a.MarkaModel</td>
+                                        <td class="text-center"><span class="badge bg-primary">@a.GorevSayisi</span></td>
+                                        <td class="text-end fw-semibold">@a.ToplamKm.ToString("N0") km</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- En Maliyetli Araçlar -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h6 class="mb-0">En Maliyetli Araçlar (Top 5)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Plaka</th>
+                                <th>Yakıt</th>
+                                <th>Bakım/Hasar</th>
+                                <th class="text-end">Toplam Maliyet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.EnMaliyetliAraclar.Any())
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">Veri bulunamadı.</td></tr>
+                            }
+                            else
+                            {
+                                foreach (var a in Model.EnMaliyetliAraclar)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-light text-dark border font-monospace">@a.Plaka</span></td>
+                                        <td class="text-muted">@a.YakitMaliyeti.ToString("N2") ₺</td>
+                                        <td class="text-muted">@((a.BakimMaliyeti + a.HasarMaliyeti).ToString("N2")) ₺</td>
+                                        <td class="text-end fw-semibold text-danger">@a.ToplamMaliyet.ToString("N2") ₺</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Araç Bazlı Detaylı Maliyet Tablosu -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="mb-0">Araç Bazlı Detaylı Kullanım ve Maliyet Dökümü</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 datatable-auto">
+                <thead>
+                    <tr>
+                        <th>Plaka</th>
+                        <th>Marka / Model</th>
+                        <th class="text-center">Görev</th>
+                        <th>Mesafe</th>
+                        <th>Yakıt Maliyeti</th>
+                        <th>Bakım Maliyeti</th>
+                        <th>Hasar Maliyeti</th>
+                        <th class="text-end">Toplam Harcama</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.AracMaliyetleri.Any())
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4">Kayıtlı araç yok.</td></tr>
+                    }
+                    else
+                    {
+                        foreach (var a in Model.AracMaliyetleri)
+                        {
+                            <tr>
+                                <td><span class="badge bg-light text-dark border font-monospace">@a.Plaka</span></td>
+                                <td class="fw-medium">@a.MarkaModel</td>
+                                <td class="text-center">@a.GorevSayisi</td>
+                                <td>@a.ToplamKm.ToString("N0") km</td>
+                                <td class="text-muted">@a.YakitMaliyeti.ToString("N2") ₺</td>
+                                <td class="text-muted">@a.BakimMaliyeti.ToString("N2") ₺</td>
+                                <td class="text-muted">@a.HasarMaliyeti.ToString("N2") ₺</td>
+                                <td class="text-end fw-semibold text-danger">@a.ToplamMaliyet.ToString("N2") ₺</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Yaklaşan Bakımlar (Alt Kısım) -->
+@if (Model.YaklasanBakimlar.Any())
+{
+    <div class="alert alert-warning border-warning shadow-sm mb-4">
+        <h5 class="alert-heading fw-bold mb-2">
+            <i class="bi bi-bell-fill me-2 text-danger"></i>Yaklaşan Bakım Bildirimi (@Model.YaklasanBakimlar.Count araç)
+        </h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 mt-3">
+                <thead>
+                    <tr>
+                        <th>Araç</th>
+                        <th>Bakım Türü</th>
+                        <th>Açıklama</th>
+                        <th>Sonraki Tarih</th>
+                        <th>Kalan Süre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in Model.YaklasanBakimlar)
+                    {
+                        <tr>
+                            <td><strong>@b.AracPlaka</strong></td>
+                            <td><span class="badge bg-secondary">@b.BakimTuru</span></td>
+                            <td>@b.Aciklama</td>
+                            <td class="text-danger fw-bold">@b.SonrakiTarih?.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                @if (b.KalanGun == 0)
+                                {
+                                    <span class="badge bg-danger">Bugün!</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">@b.KalanGun gün kaldı</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Aylık Yakıt Grafiği Verileri (Model'den JSON'a)
+            var aylar = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AylikYakitTuketimi.Select(a => a.AyAdi)));
+            var tutarlar = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AylikYakitTuketimi.Select(a => a.ToplamTutar)));
+            var litreler = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AylikYakitTuketimi.Select(a => a.ToplamLitre)));
+
+            if (aylar.length > 0) {
+                var ctxYakit = document.getElementById('yakitGrafik').getContext('2d');
+                new Chart(ctxYakit, {
+                    type: 'bar',
+                    data: {
+                        labels: aylar,
+                        datasets: [
+                            {
+                                label: 'Toplam Tutar (₺)',
+                                data: tutarlar,
+                                backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                                borderColor: 'rgba(37, 99, 235, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Tüketim (Litre)',
+                                data: litreler,
+                                type: 'line',
+                                fill: false,
+                                borderColor: 'rgba(22, 163, 74, 1)',
+                                tension: 0.1,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            y: {
+                                type: 'linear', display: true, position: 'left',
+                                title: { display: true, text: 'Tutar (₺)' }
+                            },
+                            y1: {
+                                type: 'linear', display: true, position: 'right',
+                                title: { display: true, text: 'Litre' },
+                                grid: { drawOnChartArea: false }
+                            }
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('yakitGrafik').parentElement.innerHTML = '<div class="text-center text-muted py-5">Grafik verisi yok.</div>';
+            }
+
+            // 2. Maliyet Pasta Grafiği
+            var yakitMaliyet = @Model.FiloToplamYakitMaliyeti.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var bakimMaliyet = @Model.FiloToplamBakimMaliyeti.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var hasarMaliyet = @Model.FiloToplamHasarMaliyeti.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+            var ctxPasta = document.getElementById('maliyetPastaGrafik').getContext('2d');
+            new Chart(ctxPasta, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Yakıt', 'Bakım', 'Hasar'],
+                    datasets: [{
+                        data: [yakitMaliyet, bakimMaliyet, hasarMaliyet],
+                        backgroundColor: [
+                            'rgba(22, 163, 74, 0.8)', // success - yakit
+                            'rgba(217, 119, 6, 0.8)', // warning - bakim
+                            'rgba(220, 38, 38, 0.8)'  // danger - hasar
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        });
+    </script>
+}

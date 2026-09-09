@@ -1,0 +1,57 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.BakimDto
+@{
+    ViewData["Title"] = "Bakım Detayı";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">Bakım Kaydı Detayı #@Model.BakimId</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-tools me-1"></i>Bakım Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0 fs-6">
+                    <dt class="col-sm-4 text-muted">Araç Plaka</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.AracPlaka</dd>
+
+                    <dt class="col-sm-4 text-muted">Bakım Türü</dt>
+                    <dd class="col-sm-8"><span class="badge bg-info text-dark">@Model.BakimTuru</span></dd>
+
+                    <dt class="col-sm-4 text-muted">Yapılan Tarih</dt>
+                    <dd class="col-sm-8">@Model.YapilanTarih.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-sm-4 text-muted">Sonraki Tarih</dt>
+                    <dd class="col-sm-8">
+                        @(Model.SonrakiTarih.HasValue ? Model.SonrakiTarih.Value.ToString("dd.MM.yyyy") : "Belirtilmedi")
+                        @if (Model.YaklastiMi)
+                        {
+                            <span class="badge bg-danger ms-2">@Model.KalanGun gün kaldı!</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">Maliyet</dt>
+                    <dd class="col-sm-8 text-success fw-bold">@Model.Maliyet.ToString("N2") ₺</dd>
+
+                    <dt class="col-sm-4 text-muted">Açıklama</dt>
+                    <dd class="col-sm-8">@Model.Aciklama</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Duzenle" asp-route-id="@Model.BakimId" class="btn btn-primary">
+                <i class="bi bi-pencil me-1"></i>Düzenle
+            </a>
+            <a asp-action="Sil" asp-route-id="@Model.BakimId" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>Sil
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.GorevDto
+@{
+    ViewData["Title"] = "Kilometre Girişi";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Detay" asp-route-id="@Model.GorevId" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0"><i class="bi bi-speedometer2 me-2"></i>Görev Kilometre Girişi</h1>
+</div>
+
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>@TempData["Hata"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Görev #@Model.GorevId Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Araç:</strong> @Model.AracPlaka</p>
+                <p class="mb-1"><strong>Sürücü:</strong> @Model.SurucuAdSoyad</p>
+                <p class="mb-3"><strong>Gidilecek Yer:</strong> @Model.GidilecekYer</p>
+
+                <hr />
+
+                <form asp-action="KmGirisi" asp-route-id="@Model.GorevId" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="baslangicKm" class="form-label fw-semibold">Başlangıç Kilometre <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" id="baslangicKm" name="baslangicKm" class="form-control" 
+                                   value="@(Model.BaslangicKm ?? 0)" min="0" required />
+                            <span class="input-group-text">km</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bitisKm" class="form-label fw-semibold">Bitiş Kilometre <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" id="bitisKm" name="bitisKm" class="form-control" 
+                                   value="@(Model.BitisKm ?? (Model.BaslangicKm ?? 0))" min="0" required />
+                            <span class="input-group-text">km</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info py-2 small mb-4">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Görev tamamlandığında kat edilen toplam mesafe hesaplanacak ve aracın güncel kilometresi güncellenecektir.
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Detay" asp-route-id="@Model.GorevId" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>Kaydet & Görevi Tamamla
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

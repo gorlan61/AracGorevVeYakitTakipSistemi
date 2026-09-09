@@ -1,0 +1,438 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --success-color: #16a34a;
+    --success-light: #f0fdf4;
+    --warning-color: #d97706;
+    --warning-light: #fffbeb;
+    --danger-color: #dc2626;
+    --danger-light: #fef2f2;
+    --info-color: #0891b2;
+    --info-light: #ecfeff;
+
+    /* Light theme */
+    --body-bg: #f7f7f8;
+    --card-bg: #ffffff;
+    --card-header-bg: #ffffff;
+    --text-main: #18181b;
+    --text-muted: #71717a;
+    --border-color: #e4e4e7;
+    --input-bg: #ffffff;
+    --input-border: #d4d4d8;
+    --input-text: #18181b;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+}
+
+[data-bs-theme="dark"] {
+    --primary-color: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: rgba(59, 130, 246, 0.12);
+    --success-light: rgba(22, 163, 74, 0.12);
+    --warning-light: rgba(217, 119, 6, 0.12);
+    --danger-light: rgba(220, 38, 38, 0.12);
+    --info-light: rgba(8, 145, 178, 0.12);
+
+    --body-bg: #0a0a0b;
+    --card-bg: #141416;
+    --card-header-bg: #141416;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --border-color: #26262a;
+    --input-bg: #1c1c1f;
+    --input-border: #2f2f34;
+    --input-text: #f4f4f5;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+[data-bs-theme="dark"] body,
+[data-bs-theme="light"] body {
+    background-color: var(--body-bg) !important;
+    color: var(--text-main) !important;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--body-bg);
+    color: var(--text-main);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+/* Generic dark-mode text/surface fixes so utility classes stay legible */
+[data-bs-theme="dark"] h1,
+[data-bs-theme="dark"] h2,
+[data-bs-theme="dark"] h3,
+[data-bs-theme="dark"] h4,
+[data-bs-theme="dark"] h5,
+[data-bs-theme="dark"] h6,
+[data-bs-theme="dark"] p,
+[data-bs-theme="dark"] a,
+[data-bs-theme="dark"] .nav-link,
+[data-bs-theme="dark"] .navbar-brand-modern,
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .card-header,
+[data-bs-theme="dark"] .table,
+[data-bs-theme="dark"] .table td,
+[data-bs-theme="dark"] .table th,
+[data-bs-theme="dark"] .form-label {
+    color: var(--text-main) !important;
+}
+
+/* Bootstrap's table row context classes (table-warning, table-success, ...) are
+   NOT theme-aware: they always pair a light pastel background with black text,
+   in both light and dark mode. Keep that pairing intact instead of forcing the
+   cell text to the page's light theme color, which would wash it out. */
+[data-bs-theme="dark"] .table-primary td,
+[data-bs-theme="dark"] .table-primary th,
+[data-bs-theme="dark"] .table-secondary td,
+[data-bs-theme="dark"] .table-secondary th,
+[data-bs-theme="dark"] .table-success td,
+[data-bs-theme="dark"] .table-success th,
+[data-bs-theme="dark"] .table-info td,
+[data-bs-theme="dark"] .table-info th,
+[data-bs-theme="dark"] .table-warning td,
+[data-bs-theme="dark"] .table-warning th,
+[data-bs-theme="dark"] .table-danger td,
+[data-bs-theme="dark"] .table-danger th,
+[data-bs-theme="dark"] .table-light td,
+[data-bs-theme="dark"] .table-light th {
+    color: #000 !important;
+}
+
+[data-bs-theme="dark"] .text-muted,
+[data-bs-theme="dark"] .muted {
+    color: var(--text-muted) !important;
+}
+
+/* Bootstrap's alert component already ships its own theme-aware text color
+   (amber/green/red "emphasis" tones that automatically get lighter in dark
+   mode). Let headings/paragraphs inside alerts inherit that color instead of
+   being flattened to the generic body text color. */
+[data-bs-theme="dark"] .alert h1,
+[data-bs-theme="dark"] .alert h2,
+[data-bs-theme="dark"] .alert h3,
+[data-bs-theme="dark"] .alert h4,
+[data-bs-theme="dark"] .alert h5,
+[data-bs-theme="dark"] .alert h6,
+[data-bs-theme="dark"] .alert p,
+[data-bs-theme="dark"] .alert-heading {
+    color: inherit !important;
+}
+
+/* Badges/pills that intentionally sit on a light, theme-independent background
+   (bg-warning, bg-info, bg-light, bg-white) must keep dark text in both themes. */
+[data-bs-theme="dark"] .text-dark {
+    color: #18181b !important;
+}
+
+/* The navbar is always a dark surface regardless of site theme (see .navbar-modern
+   below), so its "text-dark" utility elements (login/logout links) must stay light
+   in both themes. */
+.navbar .text-dark,
+.navbar .nav-link.text-dark,
+.navbar .btn-link.text-dark,
+.navbar .text-dark *,
+.navbar .nav-link.text-dark *,
+.navbar .btn-link.text-dark * {
+    color: #f4f4f5 !important;
+    opacity: 1 !important;
+}
+
+/* ==========================================================================
+   Navbar - flat, minimal top bar (matches the page surface instead of a
+   separate gradient band)
+   ========================================================================== */
+.navbar-modern {
+    background: #101012;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.65rem 1rem;
+}
+
+.navbar-brand-modern {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: #f4f4f5;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.navbar-brand-modern i {
+    color: var(--primary-color);
+}
+
+.nav-link-modern {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #a1a1aa !important;
+    padding: 0.45rem 0.75rem !important;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.nav-link-modern:hover {
+    color: #f4f4f5 !important;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link-modern.active {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #f4f4f5;
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+.theme-toggle-btn i,
+.theme-toggle-btn .bi {
+    color: inherit;
+    font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: none;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+}
+
+.card-header {
+    background-color: var(--card-header-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-main);
+    border-top-left-radius: var(--radius-md) !important;
+    border-top-right-radius: var(--radius-md) !important;
+    padding: 0.85rem 1.1rem;
+}
+
+/* Neutralize decorative shadow utility classes still present in markup so
+   cards read as flat, minimal surfaces (bordered, not "floating"). */
+.shadow-sm, .shadow, .shadow-lg {
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   Metric cards (dashboard summary numbers) - flat bordered card with a small
+   tinted icon badge, no gradients or oversized watermark icons.
+   ========================================================================== */
+.metric-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.metric-card .metric-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+}
+
+.metric-card .metric-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.metric-card .metric-value small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.metric-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+}
+.metric-icon.icon-primary { background: var(--primary-light); color: var(--primary-color); }
+.metric-icon.icon-success { background: var(--success-light); color: var(--success-color); }
+.metric-icon.icon-warning { background: var(--warning-light); color: var(--warning-color); }
+.metric-icon.icon-info    { background: var(--info-light); color: var(--info-color); }
+.metric-icon.icon-danger  { background: var(--danger-light); color: var(--danger-color); }
+
+/* Yaklaşan Bakım Uyarısı banner (Home/Index.cshtml). Colors are intentionally
+   not hardcoded - the plain ".alert-warning" Bootstrap class already switches
+   to a theme-aware amber background/text automatically in dark mode. */
+.maintenance-alert {
+    border-left: 3px solid var(--warning-color) !important;
+}
+
+.maintenance-mini-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+/* Quick action list (Home/Index.cshtml) - flat bordered rows instead of
+   glossy light buttons. */
+.quick-action {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-main) !important;
+    background-color: transparent;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.quick-action:hover {
+    background-color: var(--card-header-bg);
+    border-color: var(--text-muted);
+}
+.quick-action i {
+    font-size: 1rem;
+}
+
+/* Small inline stat blocks (e.g. Yakit/Index.cshtml consumption mini-panels) */
+.stat-mini {
+    background-color: var(--card-header-bg);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+}
+
+.extra-small {
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   Buttons - flat, no hover lift
+   ========================================================================== */
+.btn {
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 1rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+.table {
+    margin-bottom: 0;
+    color: var(--text-main);
+}
+.table thead th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    color: var(--text-muted);
+    background-color: var(--card-header-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+}
+.table tbody td {
+    padding: 0.85rem 1rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Form controls
+   ========================================================================== */
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+}
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.8rem;
+    font-size: 0.9rem;
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-bg);
+    border-color: var(--primary-color);
+    color: var(--input-text);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+footer {
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+}

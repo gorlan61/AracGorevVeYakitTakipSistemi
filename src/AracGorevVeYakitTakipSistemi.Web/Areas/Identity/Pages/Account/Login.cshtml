@@ -1,0 +1,39 @@
+@page
+@model AracGorevVeYakitTakipSistemi.Web.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-3">Giriş Yap</h1>
+                <p class="text-muted">Sisteme erişmek için bilgilerinizi girin.</p>
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.KullaniciAdi" class="form-control" autocomplete="username" placeholder="Kullanıcı adı" />
+                        <label asp-for="Input.KullaniciAdi">Kullanıcı adı</label>
+                        <span asp-validation-for="Input.KullaniciAdi" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Sifre" class="form-control" autocomplete="current-password" placeholder="Şifre" />
+                        <label asp-for="Input.Sifre">Şifre</label>
+                        <span asp-validation-for="Input.Sifre" class="text-danger"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="Input.BeniHatirla" class="form-check-input" />
+                        <label asp-for="Input.BeniHatirla" class="form-check-label">Beni hatırla</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
+                <p class="mt-3 mb-0 text-center">Hesabınız yok mu? <a asp-page="./Register">Kayıt ol</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

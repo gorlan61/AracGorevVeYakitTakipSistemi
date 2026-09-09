@@ -1,0 +1,138 @@
+@model IReadOnlyList<AracGorevVeYakitTakipSistemi.Application.DTOs.BakimDto>
+@using AracGorevVeYakitTakipSistemi.Application.DTOs
+@{
+    ViewData["Title"] = "Bakım Takibi";
+    var yaklasanlar = ViewBag.YaklasanBakimlar as IReadOnlyList<BakimDto> ?? new List<BakimDto>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-tools me-2"></i>Bakım Takibi</h1>
+    <a asp-action="Yeni" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Yeni Bakım Kaydı Ekle
+    </a>
+</div>
+
+@if (TempData["Basari"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@TempData["Basari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>@TempData["Hata"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Yaklaşan Bakım Uyarısı (İş Kuralı 4) -->
+@if (yaklasanlar.Any())
+{
+    <div class="alert alert-warning border-warning shadow-sm mb-4">
+        <h5 class="alert-heading fw-bold mb-2">
+            <i class="bi bi-bell-fill me-2 text-danger"></i>Yaklaşan Bakım Bildirimi (@yaklasanlar.Count araç)
+        </h5>
+        <p class="mb-2">Aşağıdaki araçların sonraki bakım/muayene tarihi yaklaşmaktadır:</p>
+        <div class="list-group">
+            @foreach (var b in yaklasanlar)
+            {
+                <a asp-action="Detay" asp-route-id="@b.BakimId"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="text-primary me-2">@b.AracPlaka</strong>
+                        <span class="badge bg-secondary me-2">@b.BakimTuru</span>
+                        <span class="text-muted small">@b.Aciklama</span>
+                    </div>
+                    <span class="badge bg-danger">
+                        @if (b.KalanGun == 0)
+                        {
+                            <span>Bugün!</span>
+                        }
+                        else
+                        {
+                            <span>@b.KalanGun gün kaldı (@b.SonrakiTarih?.ToString("dd.MM.yyyy"))</span>
+                        }
+                    </span>
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0 fs-6"><i class="bi bi-list-ul me-1"></i>Bakım Kayıtları</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-tools fs-1 d-block mb-2"></i>
+                <p>Henüz bakım kaydı yok. <a asp-action="Yeni">İlk kaydı ekleyin.</a></p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 datatable-auto">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Araç</th>
+                            <th>Bakım Türü</th>
+                            <th>Yapılan Tarih</th>
+                            <th>Sonraki Tarih</th>
+                            <th>Açıklama</th>
+                            <th>Maliyet</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model)
+                        {
+                            <tr class="@(b.YaklastiMi ? "table-warning" : "")">
+                                <td><strong>@b.AracPlaka</strong></td>
+                                <td><span class="badge bg-info text-dark">@b.BakimTuru</span></td>
+                                <td>@b.YapilanTarih.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    @if (b.SonrakiTarih.HasValue)
+                                    {
+                                        <span class="@(b.YaklastiMi ? "fw-bold text-danger" : "")">
+                                            @b.SonrakiTarih.Value.ToString("dd.MM.yyyy")
+                                        </span>
+                                        @if (b.YaklastiMi)
+                                        {
+                                            <i class="bi bi-exclamation-circle-fill text-danger ms-1" title="Bakım yaklaştı!"></i>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>@b.Aciklama</td>
+                                <td class="fw-bold">@b.Maliyet.ToString("N2") ₺</td>
+                                <td class="text-end">
+                                    <a asp-action="Detay" asp-route-id="@b.BakimId"
+                                       class="btn btn-sm btn-outline-secondary me-1" title="Detay">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Duzenle" asp-route-id="@b.BakimId"
+                                       class="btn btn-sm btn-outline-primary me-1" title="Düzenle">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Sil" asp-route-id="@b.BakimId"
+                                       class="btn btn-sm btn-outline-danger btn-sil-onayla" title="Sil"
+                                       data-isim="@b.AracPlaka – @b.BakimTuru bakım kaydı">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

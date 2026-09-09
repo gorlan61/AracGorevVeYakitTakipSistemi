@@ -1,0 +1,119 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.GorevDto
+@using AracGorevVeYakitTakipSistemi.Domain.Enums
+@{
+    ViewData["Title"] = "Görev Detayı";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">Görev Detayı #@Model.GorevId</h1>
+</div>
+
+@if (TempData["Basari"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@TempData["Basari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Uyari"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>@TempData["Uyari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>@TempData["Hata"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Görev Bilgileri</h5>
+                @{
+                    var (durumBadge, durumMetin) = Model.Durum.ToString() switch
+                    {
+                        "Planlandi" => ("badge bg-info text-dark", "Planlandı"),
+                        "DevamEdiyor" => ("badge bg-warning text-dark", "Devam Ediyor"),
+                        "Tamamlandi" => ("badge bg-success", "Tamamlandı"),
+                        _ => ("badge bg-secondary", "İptal")
+                    };
+                }
+                <span class="@durumBadge fs-6">@durumMetin</span>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0 fs-6">
+                    <dt class="col-sm-4 text-muted">Görev Tarihi</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.GorevTarihi.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-sm-4 text-muted">Atanan Araç</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.AracPlaka</dd>
+
+                    <dt class="col-sm-4 text-muted">Atanan Sürücü</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.SurucuAdSoyad</dd>
+
+                    <dt class="col-sm-4 text-muted">Gidilecek Yer</dt>
+                    <dd class="col-sm-8">@Model.GidilecekYer</dd>
+
+                    <dt class="col-sm-4 text-muted">Görev Amacı</dt>
+                    <dd class="col-sm-8">@Model.GorevAmaci</dd>
+
+                    <dt class="col-sm-4 text-muted">Başlangıç Km</dt>
+                    <dd class="col-sm-8">@(Model.BaslangicKm.HasValue ? $"{Model.BaslangicKm:N0} km" : "Girilmedi")</dd>
+
+                    <dt class="col-sm-4 text-muted">Bitiş Km</dt>
+                    <dd class="col-sm-8">@(Model.BitisKm.HasValue ? $"{Model.BitisKm:N0} km" : "Girilmedi")</dd>
+
+                    <dt class="col-sm-4 text-muted">Toplam Mesafe</dt>
+                    <dd class="col-sm-8 font-monospace fw-bold text-primary">
+                        @(Model.ToplamMesafe.HasValue ? $"{Model.ToplamMesafe:N0} km" : "—")
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            @if (Model.Durum != GorevDurumu.Tamamlandi && Model.Durum != GorevDurumu.Iptal)
+            {
+                <a asp-action="KmGirisi" asp-route-id="@Model.GorevId" class="btn btn-success">
+                    <i class="bi bi-speedometer2 me-1"></i>Kilometre Girişi Yap & Görevi Tamamla
+                </a>
+            }
+            <a asp-action="Sil" asp-route-id="@Model.GorevId" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>Görevi Sil
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Durum Güncelle</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="DurumGuncelle" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.GorevId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Yeni Durum Seçin</label>
+                        <select name="durum" class="form-select" asp-items="@Html.GetEnumSelectList<GorevDurumu>()" asp-for="Durum">
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-check2-circle me-1"></i>Durumu Güncelle
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

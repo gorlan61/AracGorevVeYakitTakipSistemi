@@ -1,0 +1,99 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.AracDto
+@using AracGorevVeYakitTakipSistemi.Domain.Enums
+@{
+    bool yeniKayit = Model.AracId == 0;
+    ViewData["Title"] = yeniKayit ? "Yeni Araç Ekle" : "Araç Düzenle";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="@(yeniKayit ? "Yeni" : "Duzenle")" asp-route-id="@Model.AracId" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="AracId" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Plaka" class="form-label fw-semibold">Plaka <span class="text-danger">*</span></label>
+                            <input asp-for="Plaka" class="form-control text-uppercase" placeholder="Örn: 34ABC123" />
+                            <span asp-validation-for="Plaka" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Marka" class="form-label fw-semibold">Marka <span class="text-danger">*</span></label>
+                            <input asp-for="Marka" class="form-control" placeholder="Örn: Ford" />
+                            <span asp-validation-for="Marka" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Model" class="form-label fw-semibold">Model <span class="text-danger">*</span></label>
+                            <input asp-for="Model" class="form-control" placeholder="Örn: Transit" />
+                            <span asp-validation-for="Model" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="ModelYili" class="form-label fw-semibold">Model Yılı <span class="text-danger">*</span></label>
+                            <input asp-for="ModelYili" class="form-control" type="number" min="1900" max="2100" />
+                            <span asp-validation-for="ModelYili" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="YakitTuru" class="form-label fw-semibold">Yakıt Türü <span class="text-danger">*</span></label>
+                            <select asp-for="YakitTuru" class="form-select"
+                                    asp-items="@Html.GetEnumSelectList<YakitTuru>()">
+                                <option value="">-- Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="YakitTuru" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Durum" class="form-label fw-semibold">Durum <span class="text-danger">*</span></label>
+                            <select asp-for="Durum" class="form-select"
+                                    asp-items="@Html.GetEnumSelectList<AracGorevVeYakitTakipSistemi.Domain.Enums.AracDurumu>()">
+                                <option value="">-- Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="Durum" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="RuhsatNo" class="form-label fw-semibold">Ruhsat No <span class="text-danger">*</span></label>
+                            <input asp-for="RuhsatNo" class="form-control" placeholder="Ruhsat numarası" />
+                            <span asp-validation-for="RuhsatNo" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="GuncelKm" class="form-label fw-semibold">Güncel Kilometre</label>
+                            <div class="input-group">
+                                <input asp-for="GuncelKm" class="form-control" type="number" min="0" />
+                                <span class="input-group-text">km</span>
+                            </div>
+                            <span asp-validation-for="GuncelKm" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy me-1"></i>@(yeniKayit ? "Kaydet" : "Güncelle")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Plaka alanını otomatik büyük harf yap
+        document.getElementById('Plaka')?.addEventListener('input', function () {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+}

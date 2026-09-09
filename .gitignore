@@ -1,0 +1,42 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / JetBrains / VS Code
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local configuration and secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+*.secrets.json
+secrets/
+
+# NuGet caches and local work artifacts
+work/
+packages/
+*.nupkg
+*.snupkg
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+*.temp
+
+# Operating-system files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local output / test artifacts
+outputs/
+TestResults/
+
+# Invalid Windows-reserved placeholder present in the working directory
+_nul

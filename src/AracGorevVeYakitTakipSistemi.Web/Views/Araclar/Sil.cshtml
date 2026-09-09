@@ -1,0 +1,45 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.AracDto
+@{
+    ViewData["Title"] = "Araç Sil";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0 text-danger">Araç Sil</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle me-1"></i>Bu işlem geri alınamaz
+            </div>
+            <div class="card-body">
+                <p>Aşağıdaki aracı silmek istediğinizden emin misiniz?</p>
+                <dl class="row">
+                    <dt class="col-sm-4">Plaka</dt>
+                    <dd class="col-sm-8"><strong>@Model.Plaka</strong></dd>
+                    <dt class="col-sm-4">Marka / Model</dt>
+                    <dd class="col-sm-8">@Model.Marka @Model.Model</dd>
+                    <dt class="col-sm-4">Model Yılı</dt>
+                    <dd class="col-sm-8">@Model.ModelYili</dd>
+                </dl>
+                <div class="alert alert-warning mt-2 mb-0 small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Bu araçla ilişkili görev, yakıt, bakım veya hasar kaydı varsa silme işlemi engellenecektir.
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                <form asp-action="Sil" asp-route-id="@Model.AracId" method="post" class="form-sil-onayla">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Evet, Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

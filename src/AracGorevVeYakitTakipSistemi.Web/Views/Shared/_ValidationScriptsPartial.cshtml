@@ -1,0 +1,13 @@
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    if (typeof $ !== 'undefined' && $.validator) {
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        };
+        $.validator.methods.range = function (value, element, param) {
+            var globalizedValue = value.toString().replace(",", ".");
+            return this.optional(element) || (parseFloat(globalizedValue) >= parseFloat(param[0]) && parseFloat(globalizedValue) <= parseFloat(param[1]));
+        };
+    }
+</script>

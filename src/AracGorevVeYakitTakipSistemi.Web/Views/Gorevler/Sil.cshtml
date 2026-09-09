@@ -1,0 +1,49 @@
+@model AracGorevVeYakitTakipSistemi.Application.DTOs.GorevDto
+@{
+    ViewData["Title"] = "Görev Sil";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h1 class="h3 mb-0 text-danger">Görev Sil</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle me-1"></i>Bu işlem geri alınamaz
+            </div>
+            <div class="card-body">
+                <p>Aşağıdaki görev kaydını silmek istediğinizden emin misiniz?</p>
+                <dl class="row">
+                    <dt class="col-sm-4">Görev ID</dt>
+                    <dd class="col-sm-8">#@Model.GorevId</dd>
+
+                    <dt class="col-sm-4">Tarih</dt>
+                    <dd class="col-sm-8">@Model.GorevTarihi.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-sm-4">Araç</dt>
+                    <dd class="col-sm-8">@Model.AracPlaka</dd>
+
+                    <dt class="col-sm-4">Sürücü</dt>
+                    <dd class="col-sm-8">@Model.SurucuAdSoyad</dd>
+
+                    <dt class="col-sm-4">Gidilecek Yer</dt>
+                    <dd class="col-sm-8">@Model.GidilecekYer</dd>
+                </dl>
+            </div>
+            <div class="card-footer d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                <form asp-action="Sil" asp-route-id="@Model.GorevId" method="post" class="form-sil-onayla">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Evet, Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

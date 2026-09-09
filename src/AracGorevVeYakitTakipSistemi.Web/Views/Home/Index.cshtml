@@ -1,0 +1,195 @@
+@model AracGorevVeYakitTakipSistemi.Web.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (!User.Identity?.IsAuthenticated ?? true)
+{
+    <div class="text-center py-5 my-4">
+        <div class="mb-4">
+            <span class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle d-inline-block">
+                <i class="bi bi-truck-front-fill fs-1"></i>
+            </span>
+        </div>
+        <h1 class="display-6 fw-bold">Araç Görev ve Yakıt Takip Sistemi</h1>
+        <p class="lead text-muted mx-auto mb-4" style="max-width: 560px;">
+            Kurumsal araç filonuzu, görevlendirmelerinizi, yakıt alımlarınızı ve bakım/hasar kayıtlarınızı dijital ortamda yönetin.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary px-4">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Giriş Yap
+            </a>
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-secondary px-4">
+                <i class="bi bi-person-plus me-1"></i> Kayıt Ol
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h4 mb-1">Sistem Özeti</h1>
+            <p class="text-muted small mb-0">Filo durumu ve hızlı erişim gösterge paneli.</p>
+        </div>
+        <a asp-controller="Gorevler" asp-action="Yeni" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Görev Oluştur
+        </a>
+    </div>
+
+    <!-- Yaklaşan Bakım Uyarısı Banner (İş Kuralı 4) -->
+    @if (Model.YaklasanBakimlar.Any())
+    {
+        <div class="alert alert-warning maintenance-alert border-0 rounded-3 mb-4 p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-bell-fill text-warning me-2"></i>Yaklaşan Bakım Uyarısı (@Model.YaklasanBakimlar.Count Araç)
+                </h6>
+                <a asp-controller="Bakim" asp-action="Index" class="btn btn-sm btn-warning fw-semibold">Tüm Bakımları İncele</a>
+            </div>
+            <div class="row g-2 mt-1">
+                @foreach (var b in Model.YaklasanBakimlar.Take(3))
+                {
+                    <div class="col-md-4">
+                        <div class="maintenance-mini-card p-2 rounded-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-primary fs-6">@b.AracPlaka</strong>
+                                <span class="badge bg-danger">@b.KalanGun gün kaldı</span>
+                            </div>
+                            <div class="small text-muted">@b.BakimTuru — Tarih: <strong>@b.SonrakiTarih?.ToString("dd.MM.yyyy")</strong></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Özet Metrikleri -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div>
+                    <div class="metric-label">Araç Filosu</div>
+                    <div class="metric-value">@Model.AktifArac <small>/ @Model.ToplamArac aktif</small></div>
+                </div>
+                <span class="metric-icon icon-primary"><i class="bi bi-truck"></i></span>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div>
+                    <div class="metric-label">Sürücü Kadrosu</div>
+                    <div class="metric-value">@Model.AktifSurucu <small>/ @Model.ToplamSurucu aktif</small></div>
+                </div>
+                <span class="metric-icon icon-success"><i class="bi bi-person-badge"></i></span>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div>
+                    <div class="metric-label">Görev Durumu</div>
+                    <div class="metric-value">@Model.DevamEdenGorev <small>devam / @Model.PlanlananGorev planlandı</small></div>
+                </div>
+                <span class="metric-icon icon-warning"><i class="bi bi-clipboard2-check"></i></span>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div>
+                    <div class="metric-label">Aylık Yakıt Tutarı</div>
+                    <div class="metric-value">@Model.BuAyYakitTutar.ToString("N2") ₺</div>
+                </div>
+                <span class="metric-icon icon-info"><i class="bi bi-fuel-pump"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hızlı Erişim Menüleri & Son Görevler -->
+    <div class="row g-4">
+        <!-- Son Görevler -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Son Görev Kayıtları</h6>
+                    <a asp-controller="Gorevler" asp-action="Index" class="btn btn-sm btn-outline-secondary">Tümünü Gör</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.SonGorevler.Any())
+                    {
+                        <div class="text-center py-5 text-muted">Henüz kaydedilmiş görev yok.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Araç Plaka</th>
+                                        <th>Sürücü</th>
+                                        <th>Gidilecek Yer</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var g in Model.SonGorevler)
+                                    {
+                                        <tr>
+                                            <td>@g.GorevTarihi.ToString("dd.MM.yyyy")</td>
+                                            <td><span class="badge bg-light text-dark border">@g.AracPlaka</span></td>
+                                            <td class="fw-medium">@g.SurucuAdSoyad</td>
+                                            <td>@g.GidilecekYer</td>
+                                            <td>
+                                                @{
+                                                    var (badge, metin) = g.Durum.ToString() switch
+                                                    {
+                                                        "Planlandi" => ("badge bg-info text-dark", "Planlandı"),
+                                                        "DevamEdiyor" => ("badge bg-warning text-dark", "Devam Ediyor"),
+                                                        "Tamamlandi" => ("badge bg-success", "Tamamlandı"),
+                                                        _ => ("badge bg-secondary", "İptal")
+                                                    };
+                                                }
+                                                <span class="@badge">@metin</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Hızlı İşlem Kısayolları -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Hızlı İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Gorevler" asp-action="Yeni" class="quick-action">
+                            <i class="bi bi-plus-circle text-primary"></i> Yeni Görev Oluştur
+                        </a>
+                        <a asp-controller="Yakit" asp-action="Yeni" class="quick-action">
+                            <i class="bi bi-fuel-pump text-success"></i> Yakıt Kaydı Gir
+                        </a>
+                        <a asp-controller="Bakim" asp-action="Yeni" class="quick-action">
+                            <i class="bi bi-tools text-warning"></i> Bakım Kaydı Ekle
+                        </a>
+                        <a asp-controller="Hasar" asp-action="Yeni" class="quick-action">
+                            <i class="bi bi-shield-exclamation text-danger"></i> Hasar Bildirimi Yap
+                        </a>
+                        <a asp-controller="Raporlar" asp-action="Index" class="quick-action">
+                            <i class="bi bi-bar-chart-line text-info"></i> Maliyet & Performans Raporu
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,139 @@
+@model IReadOnlyList<AracGorevVeYakitTakipSistemi.Application.DTOs.YakitKaydiDto>
+@using AracGorevVeYakitTakipSistemi.Application.DTOs
+@{
+    ViewData["Title"] = "Yakıt Kayıtları";
+    var analizler = ViewBag.Analizler as IReadOnlyList<YakitTuketimAnaliziDto> ?? new List<YakitTuketimAnaliziDto>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-fuel-pump me-2"></i>Yakıt Takibi & Tüketim Analizi</h1>
+    <a asp-action="Yeni" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Yeni Yakıt Kaydı Ekle
+    </a>
+</div>
+
+@if (TempData["Basari"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@TempData["Basari"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Hata"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>@TempData["Hata"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Araç Bazlı Tüketim ve Maliyet Kartları -->
+@if (analizler.Any())
+{
+    <h5 class="mb-3 text-secondary"><i class="bi bi-calculator me-1"></i>Araç Bazlı Ortalama Tüketim Görünümü</h5>
+    <div class="row g-3 mb-4">
+        @foreach (var a in analizler)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-start border-primary border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="card-title fw-bold mb-0">@a.Plaka</h6>
+                            <span class="badge bg-light text-dark border">@a.MarkaModel</span>
+                        </div>
+                        <div class="row text-center mt-3 g-2">
+                            <div class="col-6">
+                                <div class="stat-mini">
+                                    <div class="text-muted extra-small">Ort. Tüketim</div>
+                                    <div class="fw-bold text-primary fs-6">
+                                        @(a.OrtalamaTuketim100Km > 0 ? $"{a.OrtalamaTuketim100Km} L/100km" : "Yetersiz Veri")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-mini">
+                                    <div class="text-muted extra-small">Km Başı Maliyet</div>
+                                    <div class="fw-bold text-success fs-6">
+                                        @(a.KmBasiMaliyet > 0 ? $"{a.KmBasiMaliyet} ₺/km" : "Yetersiz Veri")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-muted small d-flex justify-content-between">
+                            <span>Toplam Tutar: <strong>@a.ToplamTutar.ToString("N2") ₺</strong></span>
+                            <span>Mesafe: <strong>@a.ToplamMesafe.ToString("N0") km</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fs-6"><i class="bi bi-list-ul me-1"></i>Yakıt Kayıt Geçmişi</h5>
+        <form method="get" class="d-flex align-items-center gap-2">
+            <select name="aracId" class="form-select form-select-sm" asp-items="ViewBag.AracListesi" onchange="this.form.submit()">
+                <option value="">-- Tüm Araçlar --</option>
+            </select>
+            @if (ViewBag.SeciliAracId != null)
+            {
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Temizle</a>
+            }
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-fuel-pump fs-1 d-block mb-2"></i>
+                <p>Yakıt kaydı bulunamadı.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 datatable-auto">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Araç Plaka</th>
+                            <th>Fiş No</th>
+                            <th>Kilometre</th>
+                            <th>Miktar</th>
+                            <th>Birim Fiyat</th>
+                            <th>Toplam Tutar</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var y in Model)
+                        {
+                            <tr>
+                                <td>@y.Tarih.ToString("dd.MM.yyyy")</td>
+                                <td><strong>@y.AracPlaka</strong></td>
+                                <td>@y.FisNo</td>
+                                <td>@y.Km.ToString("N0") km</td>
+                                <td>@y.Litre.ToString("N2") L</td>
+                                <td>@y.BirimFiyat.ToString("N2") ₺/L</td>
+                                <td class="fw-bold text-success">@y.ToplamTutar.ToString("N2") ₺</td>
+                                <td class="text-end">
+                                    <a asp-action="Duzenle" asp-route-id="@y.YakitId"
+                                       class="btn btn-sm btn-outline-primary me-1" title="Düzenle">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Sil" asp-route-id="@y.YakitId"
+                                       class="btn btn-sm btn-outline-danger btn-sil-onayla" title="Sil"
+                                       data-isim="@y.AracPlaka – @y.Tarih.ToString("dd.MM.yyyy") yakıt kaydı">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
